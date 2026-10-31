@@ -57,7 +57,9 @@ Available profiles
 * TPU-v5e: BF16, K128/256/512/1024/2048; DP4 partial-tail rule, DPA8 numerical
   updates and sequential tile composition. A follow-up sweep matches 4,176
   recorded cases across eight output shapes, without shape-dependent changes.
-* TPU-v6e: BF16, K128 for the tested shapes; K256/512/1024/2048 at N128.
+* TPU-v6e: BF16, K128 for the tested shapes; K256/512/1024/2048 at
+  M64/128/256 and N128. M4096,K256,N128 has 21/32 dense mismatches and is
+  rejected; an explicit split into two K128 calls matches all 32 cases.
   The same local rules feed a paired-then-sequential tile reduction. Native
   N!=128 at K>=256 has measured discrepancies and raises NotImplementedError.
 * TPU-v7: BF16 native N128 profile, measured K values from 128 through 2048;

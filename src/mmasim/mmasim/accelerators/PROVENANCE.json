@@ -16,7 +16,8 @@
       "local_arithmetic": "unchanged tpu_pe.tile128 and tpu.add32",
       "outer_schedule": "paired 128-term tile results, then sequential accumulation",
       "evidence_archive_sha256": "930118e11376f18efd3cebbd3f5caad8dcb9a13c7fbb33d34baab464cb219572",
-      "validation": "tests/accelerators/v6-shape-validation.json"
+      "validation": "tests/accelerators/v6-shape-validation.json",
+      "large_m_scope_validation": "tests/accelerators/v6-large-m-validation.json"
     }
   }
 }

@@ -3,6 +3,8 @@
 K128 matches all tested output shapes. At K256/512/1024/2048, N128
 matches paired 128-term tiles followed by sequential FP32 accumulation.
 Other tested N values have unresolved native-path discrepancies at K>=256.
+The public adapter also guards M to 64/128/256: M4096,K256,N128 has a
+different native path despite the same N. This helper models arithmetic only.
 The local arithmetic is the unchanged v5e/v6e DP4 partial-tail candidate.
 """
 from .tpu_pe import tile128

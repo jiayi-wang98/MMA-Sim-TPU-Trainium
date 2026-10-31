@@ -1,0 +1,54 @@
+{
+  "native_M4096_K256": {
+    "N": [
+      64,
+      128,
+      192,
+      256,
+      384,
+      512
+    ],
+    "dense_cases_per_shape": 32,
+    "paired_mismatches_per_shape": 21
+  },
+  "controls": [
+    {
+      "shape": [
+        128,
+        256,
+        128
+      ],
+      "cases": 32,
+      "native_mismatches": 0,
+      "split_mismatches": 0,
+      "repeat_failures": 0
+    },
+    {
+      "shape": [
+        4096,
+        256,
+        128
+      ],
+      "cases": 32,
+      "native_mismatches": 21,
+      "split_mismatches": 0,
+      "repeat_failures": 0
+    },
+    {
+      "shape": [
+        4096,
+        256,
+        256
+      ],
+      "cases": 32,
+      "native_mismatches": 21,
+      "split_mismatches": 0,
+      "repeat_failures": 0
+    }
+  ],
+  "archives_sha256": {
+    "v6-timing-result.zip": "d72ac3bdc141f97ed1a48ace6d0a4419fdde9d964559495676a7ec58de5a3442",
+    "v6-timing-followup.zip": "69e66e29dc4b7acb76150e1fb894ee7363be749a8b88cccf0c0d3529340e3512",
+    "v6-timing-profile.zip": "9611c1b8c3238b98bc3b5e5029b679c8a427e1695e37fca9482b8efac6215db1"
+  }
+}

@@ -104,8 +104,8 @@ class Matmul:
         if self.arch == 'TPU-v5e' and k not in (128, 256, 512, 1024, 2048):
             raise NotImplementedError('TPU v5e requires a validated K: 128/256/512/1024/2048')
         if self.arch == 'TPU-v6e':
-            if k not in (128, 256, 512, 1024, 2048) or (k > 128 and n != 128):
-                raise NotImplementedError('TPU v6e requires N128 at K256/512/1024/2048; other N remain unresolved')
+            if k not in (128, 256, 512, 1024, 2048) or (k > 128 and (n != 128 or m not in (64, 128, 256))):
+                raise NotImplementedError('TPU v6e requires M64/128/256 and N128 at K256/512/1024/2048; larger M and other N remain unresolved')
         if self.arch == 'TPU-v7':
             valid_k = (128, 256, 512, 640, 768, 896, 1024, 1152, 1536, 2048) if self.fmt == 'bf16' else (128, 256, 512)
             if n != 128 or k not in valid_k:
