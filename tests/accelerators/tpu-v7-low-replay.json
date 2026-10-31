@@ -1,0 +1,126 @@
+{
+  "cases": 44416,
+  "mismatches": 0,
+  "jobs": {
+    "v7-full/target-float4_e2m1fn-jax-k128": {
+      "cases": 585,
+      "mismatches": 0,
+      "observation_sha256": "f56c4f21d8b054fecc4f18424af19914c17ce75956eda752a0aa84fa4493a10b"
+    },
+    "v7-full/target-float4_e2m1fn-jax-k256": {
+      "cases": 755,
+      "mismatches": 0,
+      "observation_sha256": "5b93cd0cd1c2e73f011030e3119b0600f30a26ff1f113e3cf1773f7bdda5bab9"
+    },
+    "v7-full/target-float4_e2m1fn-jax-k512": {
+      "cases": 1039,
+      "mismatches": 0,
+      "observation_sha256": "19558127387ce5ce571a5e21191ce6c61cc6d299a0237dea04f1916c30f62f78"
+    },
+    "v7-full/target-float4_e2m1fn-pallas-k128": {
+      "cases": 585,
+      "mismatches": 0,
+      "observation_sha256": "ea05961172c0d9010e4c0556934f77cd8072a2886b6281eb469fd6bde66965db"
+    },
+    "v7-full/target-float4_e2m1fn-pallas-k256": {
+      "cases": 755,
+      "mismatches": 0,
+      "observation_sha256": "3acf208272d7fc49b174c1061a9500b35e49aeeb0de6ff6e744a5277f7af7d6e"
+    },
+    "v7-full/target-float4_e2m1fn-pallas-k512": {
+      "cases": 1039,
+      "mismatches": 0,
+      "observation_sha256": "106e9122457889b743e98b89a135b996e9ff6ce86bcef43beca3db9a83693c20"
+    },
+    "v7-full/target-float8_e4m3fn-jax-k128": {
+      "cases": 1926,
+      "mismatches": 0,
+      "observation_sha256": "4147633926d79c20ba300ca38e9e0843228b7979f71cf4fee2f0c04433228124"
+    },
+    "v7-full/target-float8_e4m3fn-jax-k256": {
+      "cases": 2664,
+      "mismatches": 0,
+      "observation_sha256": "40258d14c3a3f471f94f97dd2833988ce995513b77f13d6dcfc9872de723e1f9"
+    },
+    "v7-full/target-float8_e4m3fn-jax-k512": {
+      "cases": 3572,
+      "mismatches": 0,
+      "observation_sha256": "dfd85276a6adb05c0f23613f59a6a4bd8eba367c916a2d450e3b977b60c81d63"
+    },
+    "v7-full/target-float8_e4m3fn-pallas-k128": {
+      "cases": 1926,
+      "mismatches": 0,
+      "observation_sha256": "4147633926d79c20ba300ca38e9e0843228b7979f71cf4fee2f0c04433228124"
+    },
+    "v7-full/target-float8_e4m3fn-pallas-k256": {
+      "cases": 2664,
+      "mismatches": 0,
+      "observation_sha256": "40258d14c3a3f471f94f97dd2833988ce995513b77f13d6dcfc9872de723e1f9"
+    },
+    "v7-full/target-float8_e4m3fn-pallas-k512": {
+      "cases": 3572,
+      "mismatches": 0,
+      "observation_sha256": "dfd85276a6adb05c0f23613f59a6a4bd8eba367c916a2d450e3b977b60c81d63"
+    },
+    "v7-full/target-float8_e5m2-jax-k128": {
+      "cases": 2110,
+      "mismatches": 0,
+      "observation_sha256": "df501a111911f9a9f1599030a53fb7c7016067e2ed97145d40eedb5ed306dbf2"
+    },
+    "v7-full/target-float8_e5m2-jax-k256": {
+      "cases": 2884,
+      "mismatches": 0,
+      "observation_sha256": "9689081e9907f9ceda8336bb78dcc714f32ea156d419a7a907dcdc2abbfd37ab"
+    },
+    "v7-full/target-float8_e5m2-jax-k512": {
+      "cases": 3816,
+      "mismatches": 0,
+      "observation_sha256": "69bea5a8720dca535e52683420b6fc2f005bbd800d465fc523f71effaa880dcd"
+    },
+    "v7-full/target-float8_e5m2-pallas-k128": {
+      "cases": 2110,
+      "mismatches": 0,
+      "observation_sha256": "df501a111911f9a9f1599030a53fb7c7016067e2ed97145d40eedb5ed306dbf2"
+    },
+    "v7-full/target-float8_e5m2-pallas-k256": {
+      "cases": 2884,
+      "mismatches": 0,
+      "observation_sha256": "9689081e9907f9ceda8336bb78dcc714f32ea156d419a7a907dcdc2abbfd37ab"
+    },
+    "v7-full/target-float8_e5m2-pallas-k512": {
+      "cases": 3816,
+      "mismatches": 0,
+      "observation_sha256": "69bea5a8720dca535e52683420b6fc2f005bbd800d465fc523f71effaa880dcd"
+    },
+    "v7-smoke/target-float4_e2m1fn-jax-k128": {
+      "cases": 585,
+      "mismatches": 0,
+      "observation_sha256": "f56c4f21d8b054fecc4f18424af19914c17ce75956eda752a0aa84fa4493a10b"
+    },
+    "v7-smoke/target-float4_e2m1fn-pallas-k128": {
+      "cases": 585,
+      "mismatches": 0,
+      "observation_sha256": "ea05961172c0d9010e4c0556934f77cd8072a2886b6281eb469fd6bde66965db"
+    },
+    "v7-smoke/target-float8_e4m3fn-jax-k128": {
+      "cases": 1064,
+      "mismatches": 0,
+      "observation_sha256": "f8953998ba0abcd57e50dad4a3e005e17092cb39ce37fe1182f962880c0a5a72"
+    },
+    "v7-smoke/target-float8_e4m3fn-pallas-k128": {
+      "cases": 1064,
+      "mismatches": 0,
+      "observation_sha256": "f8953998ba0abcd57e50dad4a3e005e17092cb39ce37fe1182f962880c0a5a72"
+    },
+    "v7-smoke/target-float8_e5m2-jax-k128": {
+      "cases": 1208,
+      "mismatches": 0,
+      "observation_sha256": "7475f5ccf902b17d0dd998a7e9446c05d78f4e4403134d18df003b05ffa5bcbe"
+    },
+    "v7-smoke/target-float8_e5m2-pallas-k128": {
+      "cases": 1208,
+      "mismatches": 0,
+      "observation_sha256": "7475f5ccf902b17d0dd998a7e9446c05d78f4e4403134d18df003b05ffa5bcbe"
+    }
+  }
+}

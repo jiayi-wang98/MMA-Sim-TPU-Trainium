@@ -24,7 +24,7 @@ From this source tree, Python >=3.10::
   python -m pip install -e src/mmasim
   python -m unittest discover -s tests/accelerators -v
 
-Only CPU dependencies are needed for this extension. Tests include 63 saved
+Only CPU dependencies are needed for this extension. Tests include 127 saved
 hardware cases, matrix layout/bit transport, block scales, explicit C policy,
 and rejection of unsupported shapes, formats, and gradients.
 
@@ -58,8 +58,12 @@ Available profiles
   DPA8 numerical updates, sequential tile composition.
 * TPU-v7: BF16 native N128 profile, measured K values from 128 through 2048;
   E-27 DP4 alignment, paired tile sums followed by sequential accumulation.
-  N other than 128 raises NotImplementedError. Existing experimental TPU v7
-  FP8/FP4 candidates are not yet exposed by this adapter.
+  N other than 128 raises NotImplementedError.
+* TPU-v7 low formats: e4m3fn, e5m2, e2m1fn; K128/256/512, N128,
+  Precision.DEFAULT. backend="jax" (default) or "pallas" selects the path.
+  FP8 and Pallas FP4 use E-8 alignment, nine-bit RTZ partials and nine-bit
+  RNE accumulation; JAX FP4 uses the BF16 numerical candidate. Independent
+  128-term tiles combine in a balanced FP32 tree over this measured K range.
 * Blackhole: BF16, HiFi4 four-phase arithmetic, K32.
 * Trainium3 ordinary: bf16, fp16, fp32, e4m3, e4m3fn, e5m2;
   K128/256/512, instruction chunk 32/64/128.
@@ -78,6 +82,35 @@ and a general signed-zero model are outside this finite-input interface.
 Input values must already be quantized to the selected format. FP32 tensors
 containing exact BF16/FP8/FP4 values are accepted; out-of-format values raise an
 error rather than being silently rounded. Inputs are not modified.
+
+TPU v7 FP8 / FP4
+------------------
+
+  fp8 = Matmul("TPU-v7", "e4m3fn", backend="jax")
+  fp4_jax = Matmul("TPU-v7", "e2m1fn", backend="jax")
+  fp4_pallas = Matmul("TPU-v7", "e2m1fn", backend="pallas")
+
+Pass already-quantized, unscaled operand values. Native PyTorch FP8 tensors or
+FP32 tensors containing exact FP8 values are accepted. For FP4, pass decoded
+E2M1 values in an FP32 tensor; packed nibbles are not accepted. Both matrix
+inputs must produce N=128 outputs, with K=128, 256, or 512. These are DEFAULT
+precision profiles; no HIGH/HIGHEST selection is exposed.
+
+FP4 backend selection changes the numerical model: JAX matches the BF16
+candidate, while Pallas uses nine-bit significands. The adapter preserves this
+measured distinction without asserting that JAX physically converts FP4 to
+BF16. This unscaled FP4 profile is separate from Trainium3 MXFP4. TPU block
+scales are rejected because the captured stack did not provide a scaled path.
+
+Replay the low-format corpus independently::
+
+  python tests/accelerators/replay_tpu_v7_low.py /path/to/research-data \
+      --output tpu-v7-low-replay.json
+
+Saved-output fixtures and tests cover both frontends, all three formats, and
+all three K values. The complete low-format replay matches 44,416 recorded
+comparisons with zero mismatches (including smoke/full and frontend repeats).
+tpu-v7-low-replay.json records the per-job counts and input-file hashes.
 
 Accumulator semantics
 ----------------------

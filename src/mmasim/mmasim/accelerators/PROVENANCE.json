@@ -7,7 +7,8 @@
     "tenstorrent/blackhole_phase_model.py": "44e485aaee79896cd9a0923b3d6711fd1ff3cff366abaef23e275e1ba3ec353e",
     "trainium_analysis/model.py": "fc1de1ee471505d4fd11161dd8def55ef8aa487ee944e955fa44757f2dd83526",
     "trainium_analysis/arithmetic.py": "c1f47d977aa74c93492babc578e8056e2956b1277a40dee247be74a4f21e16a2",
-    "tenstorrent/blackhole_candidate.py": "b98fbd927348435b80c192c4c8654568faad3c157e96fde9448a30dd01adcc1b"
+    "tenstorrent/blackhole_candidate.py": "b98fbd927348435b80c192c4c8654568faad3c157e96fde9448a30dd01adcc1b",
+    "tpuv7_analysis/model.py": "6ddaec94bdbed1434692ad4d2eff1f097bd430e05e834b8e1979f4ccfc2488d5"
   },
   "changes": "Package-relative imports; remove standalone audit entrypoints; extract Blackhole helper functions."
 }

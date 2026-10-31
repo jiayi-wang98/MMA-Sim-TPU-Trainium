@@ -8,7 +8,7 @@ from fractions import Fraction
 import struct
 import torch
 
-from .reference import tpu_pe, tpu_v7, blackhole, trainium
+from .reference import tpu_pe, tpu_v7, tpu_v7_low, blackhole, trainium
 from .reference.arithmetic import unpack, add32
 
 _FORMATS = {
@@ -60,9 +60,11 @@ class Matmul:
     mode: ordinary (default), double_row, two_inst, or mx for Trainium3.
     c_mode='zero' requires C=0; 'late_fp32' explicitly adds C after the dot.
     MX scale tensors are unbiased exponents, not raw packed scale bytes.
+    TPU-v7 backend='jax' (default) or 'pallas' selects a DEFAULT-precision
+    low-format path. FP4 JAX and Pallas have different arithmetic.
     """
     def __init__(self, arch, fmt='bf16', *, mode='ordinary', chunk=128,
-                 mapping='half', parts=128, c_mode='zero'):
+                 mapping='half', parts=128, c_mode='zero', backend=None):
         if arch not in ('TPU-v5e', 'TPU-v6e', 'TPU-v7', 'Blackhole', 'Trainium3'):
             raise ValueError('Unknown architecture')
         if fmt not in _FORMATS or c_mode not in ('zero', 'late_fp32'):
@@ -71,7 +73,17 @@ class Matmul:
             raise ValueError('Unsupported layout or instruction partition count')
         if chunk not in (32, 64, 128):
             raise ValueError('Supported ordinary instruction chunks: 32, 64, 128')
-        if arch != 'Trainium3' and (fmt != 'bf16' or mode != 'ordinary'):
+        if arch != 'TPU-v7' and backend is not None:
+            raise ValueError('backend selects a TPU-v7 compiler path only')
+        if arch == 'TPU-v7':
+            backend = 'jax' if backend is None else backend
+            if backend not in ('jax', 'pallas'):
+                raise ValueError('TPU-v7 backend must be jax or pallas')
+            if fmt not in ('bf16', 'e4m3fn', 'e5m2', 'e2m1fn') or mode != 'ordinary':
+                raise NotImplementedError('TPU-v7 supports BF16, FP8 and unscaled FP4 DEFAULT profiles')
+            if fmt == 'bf16' and backend != 'jax':
+                raise NotImplementedError('The BF16 adapter exposes the native JAX profile')
+        if arch not in ('Trainium3', 'TPU-v7') and (fmt != 'bf16' or mode != 'ordinary'):
             raise NotImplementedError('This adapter exposes BF16 for TPU/Blackhole')
         if arch == 'Trainium3':
             if mode not in ('ordinary', 'double_row', 'two_inst', 'mx'):
@@ -84,6 +96,7 @@ class Matmul:
                 raise NotImplementedError('Ordinary FP4 was not measured')
         self.arch, self.fmt, self.mode = arch, fmt, mode
         self.chunk, self.mapping, self.parts, self.c_mode = chunk, mapping, parts, c_mode
+        self.backend = backend
 
     def _shape(self, m, n, k):
         if min(m, n, k) <= 0:
@@ -91,8 +104,9 @@ class Matmul:
         if self.arch in ('TPU-v5e', 'TPU-v6e') and k not in (128, 256):
             raise NotImplementedError('Adapter scope is K128/K256 for TPU v5e/v6e')
         if self.arch == 'TPU-v7':
-            if n != 128 or k not in (128, 256, 512, 640, 768, 896, 1024, 1152, 1536, 2048):
-                raise NotImplementedError('TPU v7 BF16 native profile requires N128 and a validated K')
+            valid_k = (128, 256, 512, 640, 768, 896, 1024, 1152, 1536, 2048) if self.fmt == 'bf16' else (128, 256, 512)
+            if n != 128 or k not in valid_k:
+                raise NotImplementedError('TPU v7 requires N128; low-format profiles require K128/256/512')
         if self.arch == 'Blackhole' and k != 32:
             raise NotImplementedError('Blackhole HiFi4 profile is scoped to K32')
         if self.arch == 'Trainium3':
@@ -121,7 +135,12 @@ class Matmul:
         if self.arch in ('TPU-v5e', 'TPU-v6e'):
             result = tpu_pe.gemm_dot([x >> 16 for x in a], [x >> 16 for x in b])
         elif self.arch == 'TPU-v7':
-            result = tpu_v7.dot_bf16([x >> 16 for x in a], [x >> 16 for x in b], m=m, n=n)
+            aa, bb = [x >> 16 for x in a], [x >> 16 for x in b]
+            if self.fmt == 'bf16':
+                result = tpu_v7.dot_bf16(aa, bb, m=m, n=n)
+            else:
+                low = self.fmt != 'e2m1fn' or self.backend == 'pallas'
+                result = tpu_v7_low.dot(aa, bb, low=low)
         elif self.arch == 'Blackhole':
             result = blackhole.dot(a, b, phases=4)
         elif self.mode == 'ordinary':
