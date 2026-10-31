@@ -1,0 +1,10 @@
+{
+  "python": "3.10",
+  "torch": "2.9.0+cpu",
+  "bundled_measured_cases": 63,
+  "unittest_methods": 5,
+  "unittest_result": "PASS",
+  "upstream_Blackwell_and_new_Trainium3_coexistence": "PASS",
+  "installation": "editable src/mmasim, tested without PYTHONPATH",
+  "execution": "CPU only"
+}

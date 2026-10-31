@@ -115,3 +115,8 @@ trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
+## Local research extension: TPU, Blackhole, Trainium3
+
+This branch adds CPU reference backends under `mmasim.accelerators`.
+See [installation, supported profiles, and validation](README.accelerators.rst).
+The extension is a research implementation and has not been merged upstream.

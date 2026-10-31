@@ -1,0 +1,294 @@
+{
+  "cases": 106444,
+  "mismatches": 0,
+  "jobs": {
+    "ordinary/bfloat16-heldout": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k128-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k128-c32-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k128-c32-vector": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k128-c64-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k256-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k256-c128-vector": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/bfloat16-k512-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float16-k128-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float32-k128-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k128-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k128-c32-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k128-c32-vector": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k128-c64-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k256-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k256-c128-vector": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3-k512-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e4m3fn-k128-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k128-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k128-c32-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k128-c32-vector": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k128-c64-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k256-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k256-c128-vector": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "ordinary/float8_e5m2-k512-c128-psum": {
+      "cases": 192,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e4m3-half-double_row": {
+      "cases": 2216,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e4m3-half-two_inst": {
+      "cases": 2216,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e4m3-interleave-double_row": {
+      "cases": 2216,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e4m3fn-half-double_row": {
+      "cases": 2216,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e4m3fn-half-two_inst": {
+      "cases": 2216,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e4m3fn-interleave-double_row": {
+      "cases": 2216,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e5m2-half-double_row": {
+      "cases": 2936,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e5m2-half-two_inst": {
+      "cases": 2936,
+      "mismatches": 0
+    },
+    "extension/dr-float8_e5m2-interleave-double_row": {
+      "cases": 2936,
+      "mismatches": 0
+    },
+    "extension/mx-float4_e2m1fn_x4-psum32": {
+      "cases": 3679,
+      "mismatches": 0
+    },
+    "extension/mx-float4_e2m1fn_x4-psum64": {
+      "cases": 3679,
+      "mismatches": 0
+    },
+    "extension/mx-float4_e2m1fn_x4-single128": {
+      "cases": 3679,
+      "mismatches": 0
+    },
+    "extension/mx-float4_e2m1fn_x4-single128-order": {
+      "cases": 3096,
+      "mismatches": 0
+    },
+    "extension/mx-float4_e2m1fn_x4-vector32": {
+      "cases": 3679,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e4m3fn_x4-psum32": {
+      "cases": 5514,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e4m3fn_x4-psum64": {
+      "cases": 5514,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e4m3fn_x4-single128": {
+      "cases": 5514,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e4m3fn_x4-single128-order": {
+      "cases": 3096,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e4m3fn_x4-vector32": {
+      "cases": 5514,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e5m2_x4-psum32": {
+      "cases": 6309,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e5m2_x4-psum64": {
+      "cases": 6309,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e5m2_x4-single128": {
+      "cases": 6309,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e5m2_x4-single128-order": {
+      "cases": 3096,
+      "mismatches": 0
+    },
+    "extension/mx-float8_e5m2_x4-vector32": {
+      "cases": 6309,
+      "mismatches": 0
+    },
+    "Blackhole/fresh-hifi4": {
+      "cases": 4296,
+      "mismatches": 0
+    },
+    "TPU-v7/k1024-m1-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k1024-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k1024-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k1024-m256-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k1152-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k1152-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k128-m128-n128-seed32452843-native": {
+      "cases": 134,
+      "mismatches": 0
+    },
+    "TPU-v7/k128-m128-n128-seed49979687-native": {
+      "cases": 134,
+      "mismatches": 0
+    },
+    "TPU-v7/k1536-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k1536-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k2048-m1-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k2048-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k2048-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k2048-m256-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k512-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k512-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k640-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k640-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k768-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k768-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k896-m128-n128-seed32452843-native": {
+      "cases": 184,
+      "mismatches": 0
+    },
+    "TPU-v7/k896-m128-n128-seed49979687-native": {
+      "cases": 184,
+      "mismatches": 0
+    }
+  }
+}
