@@ -101,8 +101,10 @@ class Matmul:
     def _shape(self, m, n, k):
         if min(m, n, k) <= 0:
             raise ValueError('Positive matrix dimensions required')
-        if self.arch in ('TPU-v5e', 'TPU-v6e') and k not in (128, 256):
-            raise NotImplementedError('Adapter scope is K128/K256 for TPU v5e/v6e')
+        if self.arch == 'TPU-v5e' and k not in (128, 256, 512, 1024, 2048):
+            raise NotImplementedError('TPU v5e requires a validated K: 128/256/512/1024/2048')
+        if self.arch == 'TPU-v6e' and k not in (128, 256):
+            raise NotImplementedError('Adapter scope is K128/K256 for TPU v6e')
         if self.arch == 'TPU-v7':
             valid_k = (128, 256, 512, 640, 768, 896, 1024, 1152, 1536, 2048) if self.fmt == 'bf16' else (128, 256, 512)
             if n != 128 or k not in valid_k:

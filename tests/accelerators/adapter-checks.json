@@ -1,8 +1,8 @@
 {
   "python": "3.10",
   "torch": "2.9.0+cpu",
-  "bundled_measured_cases": 127,
-  "unittest_methods": 9,
+  "bundled_measured_cases": 130,
+  "unittest_methods": 10,
   "unittest_result": "PASS",
   "upstream_Blackwell_and_new_Trainium3_coexistence": "PASS",
   "installation": "editable src/mmasim, tested without PYTHONPATH",
@@ -10,5 +10,10 @@
   "tpu_v7_low_format_replay": {
     "cases": 44416,
     "mismatches": 0
+  },
+  "v5_shape_hardware_followup": {
+    "cases": 4176,
+    "mismatches": 0,
+    "configs": 40
   }
 }

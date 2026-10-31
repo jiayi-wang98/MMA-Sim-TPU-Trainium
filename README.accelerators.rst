@@ -24,7 +24,7 @@ From this source tree, Python >=3.10::
   python -m pip install -e src/mmasim
   python -m unittest discover -s tests/accelerators -v
 
-Only CPU dependencies are needed for this extension. Tests include 127 saved
+Only CPU dependencies are needed for this extension. Tests include 130 saved
 hardware cases, matrix layout/bit transport, block scales, explicit C policy,
 and rejection of unsupported shapes, formats, and gradients.
 
@@ -54,8 +54,10 @@ input, as in examples/accelerator_compare.py.
 Available profiles
 -------------------
 
-* TPU-v5e / TPU-v6e: BF16, 128-term tiles, K128/K256; DP4 partial-tail rule,
-  DPA8 numerical updates, sequential tile composition.
+* TPU-v5e: BF16, K128/256/512/1024/2048; DP4 partial-tail rule, DPA8 numerical
+  updates and sequential tile composition. A follow-up sweep matches 4,176
+  recorded cases across eight output shapes, without shape-dependent changes.
+* TPU-v6e: BF16, K128/K256; the same local rules and sequential tile composition.
 * TPU-v7: BF16 native N128 profile, measured K values from 128 through 2048;
   E-27 DP4 alignment, paired tile sums followed by sequential accumulation.
   N other than 128 raises NotImplementedError.
