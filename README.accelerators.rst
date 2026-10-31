@@ -3,7 +3,7 @@ TPU, Blackhole and Trainium3 reference backends
 
 This research extension adds mmasim.accelerators.Matmul to Microsoft MMA-Sim
 2.1.1, based on upstream commit 44b3ac00fed7e9fca7a18b7099e32d8d78a907a5.
-The original NVIDIA/AMD modules are unchanged. This is a local research branch;
+The original NVIDIA/AMD modules are unchanged. This is a research fork;
 it has not been submitted to or accepted by Microsoft.
 
 The backend wraps frozen bit-level arithmetic candidates from our numerical
@@ -24,7 +24,7 @@ From this source tree, Python >=3.10::
   python -m pip install -e src/mmasim
   python -m unittest discover -s tests/accelerators -v
 
-Only CPU dependencies are needed for this extension. Tests include 130 saved
+Only CPU dependencies are needed for this extension. Tests include 140 saved
 hardware cases, matrix layout/bit transport, block scales, explicit C policy,
 and rejection of unsupported shapes, formats, and gradients.
 
@@ -57,7 +57,9 @@ Available profiles
 * TPU-v5e: BF16, K128/256/512/1024/2048; DP4 partial-tail rule, DPA8 numerical
   updates and sequential tile composition. A follow-up sweep matches 4,176
   recorded cases across eight output shapes, without shape-dependent changes.
-* TPU-v6e: BF16, K128/K256; the same local rules and sequential tile composition.
+* TPU-v6e: BF16, K128 for the tested shapes; K256/512/1024/2048 at N128.
+  The same local rules feed a paired-then-sequential tile reduction. Native
+  N!=128 at K>=256 has measured discrepancies and raises NotImplementedError.
 * TPU-v7: BF16 native N128 profile, measured K values from 128 through 2048;
   E-27 DP4 alignment, paired tile sums followed by sequential accumulation.
   N other than 128 raises NotImplementedError.
@@ -180,3 +182,18 @@ implementations. A fast backend should preserve each stage's rounding and the
 selected reduction schedule, then pass the same recorded-output regressions.
 A training wrapper would additionally need an explicitly defined backward
 arithmetic policy; this extension deliberately raises on requires_grad inputs.
+
+V6e shape follow-up
+-------------------
+
+A 40-configuration native sweep with the same inputs and library versions as
+v5e yields 1,936 comparisons matching the newly scoped candidate. The remaining
+2,240 recorded cases belong to unresolved N!=128,K>=256 profiles and are
+rejected; 475 of those cases actually disagree with the paired-tile candidate.
+All shapes match at K128. At K256, the 64x64 native shape has 21/32 dense
+mismatches, while explicitly splitting into two K128 calls matches 76/76
+cases. An explicit sequential K1024 control at N128 matches 124/124 cases.
+
+The v6e backend therefore differs from the v5e backend at long K and enforces
+a shape guard. tests/accelerators/v6-shape-validation.json records the scope,
+and v6-shape-measured.json bundles native N128 regression outputs.

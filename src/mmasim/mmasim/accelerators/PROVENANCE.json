@@ -10,5 +10,13 @@
     "tenstorrent/blackhole_candidate.py": "b98fbd927348435b80c192c4c8654568faad3c157e96fde9448a30dd01adcc1b",
     "tpuv7_analysis/model.py": "6ddaec94bdbed1434692ad4d2eff1f097bd430e05e834b8e1979f4ccfc2488d5"
   },
-  "changes": "Package-relative imports; remove standalone audit entrypoints; extract Blackhole helper functions."
+  "changes": "Package-relative imports; remove standalone audit entrypoints; extract Blackhole helper functions.",
+  "derived_models": {
+    "reference/tpu_v6.py": {
+      "local_arithmetic": "unchanged tpu_pe.tile128 and tpu.add32",
+      "outer_schedule": "paired 128-term tile results, then sequential accumulation",
+      "evidence_archive_sha256": "930118e11376f18efd3cebbd3f5caad8dcb9a13c7fbb33d34baab464cb219572",
+      "validation": "tests/accelerators/v6-shape-validation.json"
+    }
+  }
 }

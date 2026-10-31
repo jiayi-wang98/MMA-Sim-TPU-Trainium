@@ -1,5 +1,7 @@
 # MMA-Sim: Bit-Accurate Modeling of GPU Matrix Multiply-Accumulate Units
 
+This research fork adds **TPU v5e/v6e/v7, Tenstorrent Blackhole, and Trainium3** CPU reference backends. See [supported profiles, installation, and validation](README.accelerators.rst). The original NVIDIA/AMD backends are retained.
+
 ![PyPI Version](https://img.shields.io/pypi/v/mmasim)
 
 MMA-Sim models the non-standard arithmetic behaviors of GPU matrix multiply-accumulate units such as [Tensor Cores](https://www.nvidia.com/en-us/data-center/tensor-cores/) and [Matrix Cores](https://www.amd.com/en/technologies/cdna.html). For an architecture-specific matrix multiply-accumulate (MMA) instruction, MMA-Sim simulates the MMA operation `D=A*B+C` and produces outputs **bit-wise identical** to the outputs of the GPU MMA instruction.
@@ -115,7 +117,7 @@ trademarks or logos is subject to and must follow
 [Microsoft's Trademark & Brand Guidelines](https://www.microsoft.com/legal/intellectualproperty/trademarks/usage/general).
 Use of Microsoft trademarks or logos in modified versions of this project must not cause confusion or imply Microsoft sponsorship.
 Any use of third-party trademarks or logos are subject to those third-party's policies.
-## Local research extension: TPU, Blackhole, Trainium3
+## Research extension: TPU, Blackhole, Trainium3
 
 This branch adds CPU reference backends under `mmasim.accelerators`.
 See [installation, supported profiles, and validation](README.accelerators.rst).

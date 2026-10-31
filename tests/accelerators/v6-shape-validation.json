@@ -1,0 +1,15 @@
+{
+  "supported_cases": 1936,
+  "unsupported_cases": 2240,
+  "mismatches": 0,
+  "explicit_sequential_controls": {
+    "k1024-m128-n128-sequential": {
+      "cases": 124,
+      "mismatches": 0
+    },
+    "k256-m64-n64-sequential": {
+      "cases": 76,
+      "mismatches": 0
+    }
+  }
+}
