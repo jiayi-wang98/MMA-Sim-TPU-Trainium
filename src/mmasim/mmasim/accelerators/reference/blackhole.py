@@ -22,4 +22,3 @@ def dot(a,b,phases=4,zero_exp=True,raw_exp=True):
    outstep=p2(exponent(value)-23) if value else Fraction(1)
    c=Fraction(f32(bits(rounded(value/outstep,'away')*outstep)))
  return bits(c)
-
