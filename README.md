@@ -1,6 +1,6 @@
 # MMA-Sim: Bit-Accurate Modeling of GPU Matrix Multiply-Accumulate Units
 
-This research fork adds **TPU v5e/v6e/v7, Tenstorrent Blackhole, and Trainium3** CPU reference backends. See [supported profiles, installation, and validation](README.accelerators.rst). The original NVIDIA/AMD backends are retained.
+This research fork adds **TPU v5e/v6e/v7, Tenstorrent Blackhole, and Trainium3** CPU reference backends. See [supported profiles, installation, and validation](README.accelerators.rst). The original NVIDIA/AMD backends are retained. The new [TPU instruction-group API](README.tpu.rst) separates v6e MXU arithmetic from compiler scheduling.
 
 ![PyPI Version](https://img.shields.io/pypi/v/mmasim)
 

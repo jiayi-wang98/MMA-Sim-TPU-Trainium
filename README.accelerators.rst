@@ -51,6 +51,9 @@ The example above gives Blackhole a shorter mathematical dot. For a shared-dot
 comparison, place the same 32 active terms in a zero-filled K128 TPU/Trainium
 input, as in examples/accelerator_compare.py.
 
+For explicit v6e instruction groups with compiler scheduling kept separate,
+see ``mmasim.tpu.MMA`` in `README.tpu.rst <README.tpu.rst>`_.
+
 Available profiles
 -------------------
 
