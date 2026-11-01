@@ -1,0 +1,27 @@
+HloModule jit_dot, is_scheduled=true, entry_computation_layout={(bf16[128,256]{1,0:T(8,128)(2,1)}, bf16[256,1]{0,1:T(2,128)(2,1)})->f32[128,1]{0,1:T(1,128)}}, allow_spmd_sharding_propagation_to_parameters={true,true}, allow_spmd_sharding_propagation_to_output={true}
+
+%scalar_add_computation (scalar_lhs: f32[], scalar_rhs: f32[]) -> f32[] {
+  %scalar_rhs = f32[]{:T(128)} parameter(1)
+  %scalar_lhs = f32[]{:T(128)} parameter(0)
+  ROOT %add = f32[]{:T(128)} add(%scalar_lhs, %scalar_rhs)
+}
+
+%fused_computation (param_0.2: bf16[128,256], param_1.4: f32[256]) -> f32[128] {
+  %param_0.2 = bf16[128,256]{1,0:T(8,128)(2,1)} parameter(0)
+  %convert.5 = f32[128,256]{1,0:T(8,128)} convert(%param_0.2)
+  %param_1.4 = f32[256]{0:T(256)S(1)} parameter(1)
+  %broadcast.1 = f32[128,256]{1,0:T(8,128)} broadcast(%param_1.4), dimensions={1}, metadata={op_name="jit(dot)/jit(main)/dot_general" source_file="/tmp/v5-schedule-kit/boundaries.py" source_line=9}, backend_config={"flag_configs":[],"scoped_memory_configs":[],"used_scoped_memory_configs":[],"output_chunk_bound_config":{"output_chunk_bound":["128"]}}
+  %multiply.1 = f32[128,256]{1,0:T(8,128)} multiply(%convert.5, %broadcast.1)
+  %constant.1 = f32[]{:T(128)} constant(0)
+  ROOT %reduce.1 = f32[128]{0:T(128)} reduce(%multiply.1, %constant.1), dimensions={1}, to_apply=%scalar_add_computation, metadata={op_name="jit(dot)/jit(main)/dot_general" source_file="/tmp/v5-schedule-kit/boundaries.py" source_line=9}
+}
+
+ENTRY %main.4 (Arg_0.1: bf16[128,256], Arg_1.2: bf16[256,1]) -> f32[128,1] {
+  %Arg_1.2 = bf16[256,1]{0,1:T(2,128)(2,1)} parameter(1), metadata={op_name="b"}
+  %Arg_0.1 = bf16[128,256]{1,0:T(8,128)(2,1)} parameter(0), metadata={op_name="a"}
+  %convert.4 = f32[256,1]{0,1:T(1,128)S(1)} convert(%Arg_1.2), backend_config={"flag_configs":[],"window_config":{"kernel_window_bounds":[],"output_window_bounds":["1","2"],"input_window_bounds":[],"estimated_cycles":"1834","iteration_bounds":["1","1"]},"scoped_memory_configs":[],"used_scoped_memory_configs":[{"memory_space":"1","offset":"0","size":"1024"}],"retry_config":{"retry_count":"0"}}
+  %bitcast.2 = f32[256]{0:T(256)S(1)} bitcast(%convert.4)
+  %multiply_reduce_fusion = f32[128]{0:T(128)} fusion(%Arg_0.1, %bitcast.2), kind=kLoop, calls=%fused_computation, metadata={op_name="jit(dot)/jit(main)/dot_general" source_file="/tmp/v5-schedule-kit/boundaries.py" source_line=9}, backend_config={"flag_configs":[],"window_config":{"kernel_window_bounds":[],"output_window_bounds":["16","2"],"input_window_bounds":[],"estimated_cycles":"2249","iteration_bounds":["1","1"]},"scoped_memory_configs":[],"used_scoped_memory_configs":[{"memory_space":"1","offset":"0","size":"69632"}],"retry_config":{"retry_count":"0"}}
+  ROOT %bitcast.1 = f32[128,1]{0,1:T(1,128)} bitcast(%multiply_reduce_fusion), metadata={op_name="jit(dot)/jit(main)/dot_general" source_file="/tmp/v5-schedule-kit/boundaries.py" source_line=9}
+}
+

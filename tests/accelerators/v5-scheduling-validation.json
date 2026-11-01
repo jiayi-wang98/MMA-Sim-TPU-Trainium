@@ -1,0 +1,167 @@
+{
+  "stack": {
+    "kind": "TPU v5 lite",
+    "python": "3.10.6",
+    "versions": {
+      "jax": "0.6.2",
+      "jaxlib": "0.6.2",
+      "libtpu": "0.0.17",
+      "numpy": "2.2.6",
+      "ml_dtypes": "0.6.0"
+    }
+  },
+  "scope": "BF16 DEFAULT -> FP32 native MXU; non-MXU lowerings excluded",
+  "model": "Frozen DP4 E-26 partial-tail; adjacent DP4 pair into DPA8, 16 serial updates per K128, sequential FP32 K128 block accumulation; partial final blocks zero padded",
+  "categories": [
+    {
+      "category": "original",
+      "configurations": 40,
+      "dot_comparisons": 4176,
+      "mismatches": 0
+    },
+    {
+      "category": "shape",
+      "configurations": 72,
+      "dot_comparisons": 1152,
+      "mismatches": 0
+    },
+    {
+      "category": "position",
+      "configurations": 6,
+      "dot_comparisons": 18288,
+      "mismatches": 0
+    },
+    {
+      "category": "spatial",
+      "configurations": 6,
+      "dot_comparisons": 384,
+      "mismatches": 0
+    },
+    {
+      "category": "boundaries",
+      "configurations": 130,
+      "dot_comparisons": 8304,
+      "mismatches": 0
+    },
+    {
+      "category": "dispatch",
+      "configurations": 186,
+      "dot_comparisons": 11652,
+      "mismatches": 0
+    },
+    {
+      "category": "tail",
+      "configurations": 216,
+      "dot_comparisons": 13248,
+      "mismatches": 0
+    },
+    {
+      "category": "heldout",
+      "configurations": 64,
+      "dot_comparisons": 3807,
+      "mismatches": 0
+    }
+  ],
+  "mxu_configurations": 720,
+  "dot_comparisons": 61011,
+  "mismatches": 0,
+  "excluded_non_mxu": 50,
+  "determinism": {
+    "rounds": [
+      {
+        "round": 0,
+        "jobs": 8,
+        "initial_mismatch_elements": 0,
+        "phases": {
+          "serial": {
+            "executions": 1024,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "queued8": {
+            "executions": 1024,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "interleaved_shapes": {
+            "executions": 512,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "recompiled": {
+            "executions": 256,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          }
+        }
+      },
+      {
+        "round": 1,
+        "jobs": 8,
+        "initial_mismatch_elements": 0,
+        "phases": {
+          "serial": {
+            "executions": 512,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "queued8": {
+            "executions": 512,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "interleaved_shapes": {
+            "executions": 128,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "recompiled": {
+            "executions": 256,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          }
+        }
+      }
+    ],
+    "executions": 4224,
+    "changed_executions": 0,
+    "initial_mismatch_elements": 0
+  },
+  "integrity": {
+    "archives_sha256": {
+      "v5-schedule-result.zip": "2a5eace1a1ac748adc48eade1ed6d2ef415fcfb72084b3926894bdd2683960d6",
+      "v5-schedule-boundaries.zip": "229bb8861da7770a0bf647b7b5f59a472007fe7311144f8eb7476024d6fef035",
+      "v5-schedule-dispatch.zip": "0adfc12c3802f8df3d6f2f17f00adfa29437c8d38baea7dd5633a035f5d8c595",
+      "v5-schedule-tail.zip": "1da746f945f6515609a826e478b6245bf5f712e5561b0e2d69a5c47102348064",
+      "v5-schedule-heldout.zip": "dd8a9691bbb787fda10c95ecfd0d1855b1afab3c88a548c405a9b8984cf4cd76",
+      "v5-schedule-determinism.zip": "d86a05fe584f460691c76dc78785face7b9ff2086faa12e42ebd60354dac06c4"
+    },
+    "verified_manifest_entries": {
+      "v5-schedule-result.zip": 105,
+      "v5-schedule-boundaries.zip": 311,
+      "v5-schedule-dispatch.zip": 537,
+      "v5-schedule-tail.zip": 469,
+      "v5-schedule-heldout.zip": 131,
+      "v5-schedule-determinism.zip": 44
+    },
+    "bundle_sha256": "5f9ddccb95ba57d3c9d81aa7d7ffff232dc5ceba5cba6d2bb0aae00c175a01f9"
+  },
+  "model_source_sha256": "70dd93ff743e3bf84708cbfc551a5171f0b44f04d7f1b997844a6aaf0a59a303",
+  "note": "Counts include inputs reused across shapes. Fully random large matrices use recorded sampled output cells; all small matrices are checked in full.",
+  "compiler_inventory": {
+    "mxu_hlo_files": 680,
+    "emitters": {
+      "EmitAllBatchInSublanes": 338,
+      "EmitOutputBatchInLanesInputBatchInSublanes": 104,
+      "EmitAllInputFeaturePackedInSublanesOutputBatchInSublanes": 15,
+      "EmitOutputBatchInSublanes": 34,
+      "EmitAllInputFeatureInSublanesOutputBatchInSublanesXposeReuse": 177,
+      "EmitAllInputFeatureInSublanesOutputBatchInSublanes": 3,
+      "EmitInputBatchInSublanesOutputBatchInSublanesPacked": 9
+    },
+    "dimension_labels": {
+      "bf_io->bf": 649,
+      "fb_oi->fb": 31
+    }
+  }
+}

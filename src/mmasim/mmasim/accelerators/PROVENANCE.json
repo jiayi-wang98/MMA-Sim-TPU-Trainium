@@ -32,5 +32,19 @@
         "v6-schedule-tail.zip": "d5d50d6b3f83583e9f0fb5ddd60ed5e9c4939d2207072f80e0864af48a2a3168"
       }
     }
+  },
+  "v5e_expanded_validation": {
+    "model": "unchanged tpu_pe.gemm_dot / frozen E-26 DP4 partial-tail arithmetic, sequential K128 blocks with partial final blocks",
+    "validation": "tests/accelerators/v5-scheduling-validation.json",
+    "source_sha256": "70dd93ff743e3bf84708cbfc551a5171f0b44f04d7f1b997844a6aaf0a59a303",
+    "archives_sha256": {
+      "v5-schedule-result.zip": "2a5eace1a1ac748adc48eade1ed6d2ef415fcfb72084b3926894bdd2683960d6",
+      "v5-schedule-boundaries.zip": "229bb8861da7770a0bf647b7b5f59a472007fe7311144f8eb7476024d6fef035",
+      "v5-schedule-dispatch.zip": "0adfc12c3802f8df3d6f2f17f00adfa29437c8d38baea7dd5633a035f5d8c595",
+      "v5-schedule-tail.zip": "1da746f945f6515609a826e478b6245bf5f712e5561b0e2d69a5c47102348064",
+      "v5-schedule-heldout.zip": "dd8a9691bbb787fda10c95ecfd0d1855b1afab3c88a548c405a9b8984cf4cd76",
+      "v5-schedule-determinism.zip": "d86a05fe584f460691c76dc78785face7b9ff2086faa12e42ebd60354dac06c4"
+    },
+    "scope": "BF16 DEFAULT -> FP32 MXU; measurements through K4097; no shape-dependent arithmetic refit"
   }
 }

@@ -1,8 +1,8 @@
 """CPU reference adapter for measured TPU, Blackhole and Trainium3 paths.
 
 Input values must already be quantized to the selected operand format. No
-implicit casting, fused-C assumption, or autograd is used. The v6e backend
-models zero padding inside its captured K256 MXU scheduling blocks.
+implicit casting, fused-C assumption, or autograd is used. The TPU backends
+model zero-padded tails in their K128 (v5e) or K256 (v6e) MXU blocks.
 All dot_bits inputs use FP32 encodings of those operand values.
 """
 from fractions import Fraction
@@ -99,13 +99,13 @@ class Matmul:
         self.arch, self.fmt, self.mode = arch, fmt, mode
         self.chunk, self.mapping, self.parts, self.c_mode = chunk, mapping, parts, c_mode
         self.backend = backend
-        if compiled_hlo is not None and arch != 'TPU-v6e':
-            raise ValueError('compiled_hlo selects a TPU-v6e native MXU schedule only')
-        self._v6_profile = tpu_v6.parse_compiled_hlo(compiled_hlo) if compiled_hlo is not None else None
+        if compiled_hlo is not None and arch not in ('TPU-v5e','TPU-v6e'):
+            raise ValueError('compiled_hlo describes a TPU-v5e/v6e native MXU call only')
+        self._tpu_profile = tpu_v6.parse_compiled_hlo(compiled_hlo) if compiled_hlo is not None else None
 
     def _v6_mode(self, m, n, k):
-        if self._v6_profile is not None:
-            shape, mode = self._v6_profile
+        if self._tpu_profile is not None:
+            shape, mode = self._tpu_profile
             if shape != (m,k,n):
                 raise ValueError('Runtime M,K,N differ from compiled_hlo')
             return mode
@@ -114,8 +114,12 @@ class Matmul:
     def _shape(self, m, n, k):
         if min(m, n, k) <= 0:
             raise ValueError('Positive matrix dimensions required')
-        if self.arch == 'TPU-v5e' and k not in (128, 256, 512, 1024, 2048):
-            raise NotImplementedError('TPU v5e requires a validated K: 128/256/512/1024/2048')
+        if self.arch == 'TPU-v5e':
+            if self._tpu_profile is not None:
+                if self._tpu_profile[0] != (m,k,n):
+                    raise ValueError('Runtime M,K,N differ from compiled_hlo')
+            elif min(m,n,k) < 2:
+                raise NotImplementedError('Degenerate non-MXU paths are outside the v5e model')
         if self.arch == 'TPU-v6e':
             self._v6_mode(m,n,k)
         if self.arch == 'TPU-v7':

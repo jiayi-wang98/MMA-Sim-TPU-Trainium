@@ -54,9 +54,11 @@ input, as in examples/accelerator_compare.py.
 Available profiles
 -------------------
 
-* TPU-v5e: BF16, K128/256/512/1024/2048; DP4 partial-tail rule, DPA8 numerical
-  updates and sequential tile composition. A follow-up sweep matches 4,176
-  recorded cases across eight output shapes, without shape-dependent changes.
+* TPU-v5e: BF16 DEFAULT MXU paths, including non-multiple-of-128 K tails.
+  DP4 partial-tail arithmetic, DPA8 updates and sequential K128 composition
+  match 61,011 recorded comparisons across 720 configuration records, with
+  K through 4097. The local arithmetic is unchanged. Non-MXU degeneracies
+  are rejected; optional compiled_hlo validates the native MXU and its shape.
 * TPU-v6e: BF16 DEFAULT MXU paths, including irregular K tails. Two K256
   schedules share the frozen DP4 arithmetic: independent K128 halves, or
   cross-half DP4 pairing at every update. Compiler windows select the path;
@@ -184,6 +186,29 @@ implementations. A fast backend should preserve each stage's rounding and the
 selected reduction schedule, then pass the same recorded-output regressions.
 A training wrapper would additionally need an explicitly defined backward
 arithmetic policy; this extension deliberately raises on requires_grad inputs.
+
+V5e expanded MXU coverage
+-------------------------
+
+V5e retains one arithmetic schedule across the captured shapes and seven
+compiler emitters, including transposed execution. Each K128 block contains
+16 DPA8 updates; each DPA8 combines two rounded DP4 outputs before the FP32
+accumulator update. Independent K128 results then accumulate sequentially,
+and the final partial block is numerically equivalent to zero padding.
+
+The expanded capture matches 61,011 dot comparisons, including 3,807 checked
+outputs from 64 fully random matrix configurations. Its 4,224 determinism
+executions show no observed output changes. Counts include operands reused
+across shapes. Fifty VPU-only configurations are excluded.
+
+The API accepts irregular K on MXU paths without a shape-to-schedule table.
+Unlike v6e, HLO is not needed to select between arithmetic paths. Supplying
+``compiled_hlo=...`` optionally checks that the program is a native BF16/FP32
+MXU call and that its M/K/N agree with the supplied operands. The captured
+stack is JAX/jaxlib 0.6.2 and libtpu 0.0.17; measurements reach M4096,N513,K4097
+without exhaustively testing every combination in that range. See
+``tests/accelerators/v5-scheduling-validation.json`` and the saved regression
+examples. No arithmetic constants or rounding rules were refitted.
 
 V6e native MXU scheduling
 -------------------------

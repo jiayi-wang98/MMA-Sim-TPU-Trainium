@@ -24,4 +24,4 @@ class V6ScheduleTests(unittest.TestCase):
         hlo=(BASE/'v6-hlo/m128-k385-n120.hlo').read_text()
         sim=Matmul('TPU-v6e',compiled_hlo=hlo)
         with self.assertRaises(ValueError):sim.dot_bits([0]*385,[0]*385,m=64,n=120)
-        with self.assertRaises(ValueError):Matmul('TPU-v5e',compiled_hlo=hlo)
+        with self.assertRaises(ValueError):Matmul('Blackhole',compiled_hlo=hlo)
