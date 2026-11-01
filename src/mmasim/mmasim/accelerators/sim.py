@@ -124,8 +124,10 @@ class Matmul:
             self._v6_mode(m,n,k)
         if self.arch == 'TPU-v7':
             valid_k = (128, 256, 512, 640, 768, 896, 1024, 1152, 1536, 2048) if self.fmt == 'bf16' else (128, 256, 512)
-            if n != 128 or k not in valid_k:
-                raise NotImplementedError('TPU v7 requires N128; low-format profiles require K128/256/512')
+            cross = (self.fmt == 'bf16' and self.backend == 'jax' and
+                     (m,n) in tpu_v7.CROSS_SHAPES and k in (1024,2048))
+            if not cross and (n != 128 or k not in valid_k):
+                raise NotImplementedError('Uncaptured TPU v7 shape; low-format profiles require N128 and K128/256/512')
         if self.arch == 'Blackhole' and k != 32:
             raise NotImplementedError('Blackhole HiFi4 profile is scoped to K32')
         if self.arch == 'Trainium3':

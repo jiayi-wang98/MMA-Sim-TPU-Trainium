@@ -65,6 +65,7 @@ Available profiles
   complete K256 results accumulate sequentially. The revised model matches
   61,011 recorded dot comparisons. VPU reductions are outside this model.
 * TPU-v7: BF16 native N128 profile, measured K values from 128 through 2048;
+  plus four captured cross-half M/N profiles at K1024/2048 (see below);
   E-27 DP4 alignment, paired tile sums followed by sequential accumulation.
   N other than 128 raises NotImplementedError.
 * TPU-v7 low formats: e4m3fn, e5m2, e2m1fn; K128/256/512, N128,
@@ -82,7 +83,7 @@ Available profiles
 
 Matrix calls compose the scalar candidate into a tensor operation; newly
 selected M/N shapes do not constitute new native-hardware validation.
-TPU v7 retains its known N-dependent restriction. Format/chunk combinations
+TPU v7 uses captured shape profiles. Format/chunk combinations
 also represent model composition; the original hardware jobs cover only the
 combinations recorded in the study. NaN operands are rejected. NaN payloads
 and a general signed-zero model are outside this finite-input interface.
@@ -246,3 +247,22 @@ over K256 blocks and zero-padded tails, with measurements through K4097.
 ``tests/accelerators/v6-scheduling-validation.json`` records the evidence.
 Earlier v6-shape-validation.json and v6-large-m-validation.json describe the
 superseded single-path model and are retained as historical snapshots.
+
+TPU v7 cross-half BF16 reconstruction
+------------------------------------
+
+JAX DEFAULT BF16 additionally supports (M,N)=(64,64),(128,256),(256,256),
+(127,129), each at K1024 or K2048. Eight products across K128 halves share
+an E-27 alignment grid before one FP32 rounding. Two such results per update
+and sixteen updates form a K256 result. The K256 results split into two
+contiguous equal-length sequential chains, followed by a final FP32 addition.
+
+All 1,472 previously unmodeled comparisons match; the complete round-three
+model replay matches 6,524 comparisons. K2048 dense data selected the outer
+tree, so this is reconstruction/replay evidence. Other cross-half shapes and
+K tails remain unsupported. Low-format and Pallas profiles are unchanged.
+
+Reproduce the public-API replay::
+
+  python tests/accelerators/replay_v7_cross.py /path/to/research-data \
+      --output v7-cross-adapter-replay.json

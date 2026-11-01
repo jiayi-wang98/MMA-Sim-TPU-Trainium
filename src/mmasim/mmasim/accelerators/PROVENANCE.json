@@ -31,6 +31,14 @@
         "v6-schedule-result.zip": "fbd9ae05c93fc990d5b40f29236d9b1f07f3227f03447af9ee5c504c9662d948",
         "v6-schedule-tail.zip": "d5d50d6b3f83583e9f0fb5ddd60ed5e9c4939d2207072f80e0864af48a2a3168"
       }
+    },
+    "reference/tpu_v7_cross.py": {
+      "model_source_sha256": "27b150bc47fea587e139d78dd51026a3d29765ab34f1b5fce20345baed707ee7",
+      "local": "Eight cross-half products aligned at E-27 before one FP32 rounding; two such results per update",
+      "outer": "Two contiguous equal-length chains of K256 partials; final FP32 sum",
+      "scope": "JAX DEFAULT BF16, M/N=(64,64),(128,256),(256,256),(127,129), K1024/2048",
+      "validation": "tests/accelerators/v7-cross-validation.json",
+      "selection": "Offline reconstruction: K2048 dense outputs used to select outer tree; no fresh heldout claim"
     }
   },
   "v5e_expanded_validation": {
