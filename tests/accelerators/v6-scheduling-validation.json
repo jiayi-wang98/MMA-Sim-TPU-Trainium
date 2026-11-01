@@ -1,0 +1,131 @@
+{
+  "stack": {
+    "jax": "0.6.2",
+    "jaxlib": "0.6.2",
+    "libtpu": "0.0.17"
+  },
+  "scope": "BF16 DEFAULT -> FP32 native MXU paths; finite inputs; VPU-only programs excluded",
+  "categories": [
+    {
+      "category": "original_shape_sweep",
+      "configurations": 40,
+      "dot_comparisons": 4176,
+      "mismatches": 0
+    },
+    {
+      "category": "shape_followup",
+      "configurations": 72,
+      "dot_comparisons": 1152,
+      "mismatches": 0
+    },
+    {
+      "category": "K_position_probes",
+      "configurations": 6,
+      "dot_comparisons": 18288,
+      "mismatches": 0
+    },
+    {
+      "category": "nonuniform_spatial_pairs",
+      "configurations": 6,
+      "dot_comparisons": 384,
+      "mismatches": 0
+    },
+    {
+      "category": "v6-schedule-boundaries",
+      "configurations": 130,
+      "dot_comparisons": 8304,
+      "mismatches": 0
+    },
+    {
+      "category": "v6-schedule-dispatch",
+      "configurations": 186,
+      "dot_comparisons": 11652,
+      "mismatches": 0
+    },
+    {
+      "category": "v6-schedule-tail",
+      "configurations": 216,
+      "dot_comparisons": 13248,
+      "mismatches": 0
+    },
+    {
+      "category": "v6-schedule-heldout",
+      "configurations": 64,
+      "dot_comparisons": 3807,
+      "mismatches": 0
+    }
+  ],
+  "total_dot_comparisons": 61011,
+  "mismatches": 0,
+  "notes": "Counts include repeated operands across shapes; full-random holdout counts sampled output cells, not every output of large matrices.",
+  "excluded_non_mxu_configurations": 50,
+  "determinism": {
+    "archive_sha256": "e3357d8245399e1f3cbd325c110284914adb26ded2b750f304a12581dc124443",
+    "verified_files": 44,
+    "rounds": [
+      {
+        "round": 0,
+        "jobs": 8,
+        "initial_mismatch_elements": 0,
+        "phases": {
+          "serial": {
+            "executions": 1024,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "queued8": {
+            "executions": 1024,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "interleaved_shapes": {
+            "executions": 512,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "recompiled": {
+            "executions": 256,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          }
+        }
+      },
+      {
+        "round": 1,
+        "jobs": 8,
+        "initial_mismatch_elements": 0,
+        "phases": {
+          "serial": {
+            "executions": 512,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "queued8": {
+            "executions": 512,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "interleaved_shapes": {
+            "executions": 128,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          },
+          "recompiled": {
+            "executions": 256,
+            "changed_executions": 0,
+            "changed_elements_total": 0
+          }
+        }
+      }
+    ]
+  },
+  "archives_sha256": {
+    "v6-schedule-boundaries.zip": "96e3c208ce0a38eab7b40a7a63988b6dc1fc19f84d77b53144a793591f7fa0a6",
+    "v6-schedule-determinism.zip": "e3357d8245399e1f3cbd325c110284914adb26ded2b750f304a12581dc124443",
+    "v6-schedule-dispatch.zip": "8c44e057d36cda352718bbf358a6b8e5dc12a64b05f95496eff242b90e0706ea",
+    "v6-schedule-heldout.zip": "9732f70f61f730c8aa5facd6f1849d1d7a14b4fcdd66ebdd0bedff35aab1a990",
+    "v6-schedule-result.zip": "fbd9ae05c93fc990d5b40f29236d9b1f07f3227f03447af9ee5c504c9662d948",
+    "v6-schedule-tail.zip": "d5d50d6b3f83583e9f0fb5ddd60ed5e9c4939d2207072f80e0864af48a2a3168"
+  },
+  "local_model_sha256": "9893f37c5a9ed19c064938661d74d2578b918e3a67661d0243c4da6966ee684b"
+}

@@ -1,0 +1,28 @@
+HloModule jit_dot, is_scheduled=true, entry_computation_layout={(bf16[127,447]{0,1:T(8,128)(2,1)}, bf16[447,2]{0,1:T(2,128)(2,1)})->f32[127,2]{0,1:T(2,128)}}, allow_spmd_sharding_propagation_to_parameters={true,true}, allow_spmd_sharding_propagation_to_output={true}
+
+%bitcast_fusion (bitcast_input: bf16[447,2]) -> bf16[447,2] {
+  %bitcast_input = bf16[447,2]{0,1:T(2,128)(2,1)} parameter(0)
+  ROOT %bitcast = bf16[447,2]{0,1:T(2,128)(2,1)} bitcast(%bitcast_input)
+}
+
+%bitcast_fusion.1 (bitcast_input.1: bf16[127,447]) -> bf16[127,447] {
+  %bitcast_input.1 = bf16[127,447]{0,1:T(8,128)(2,1)S(1)} parameter(0)
+  ROOT %bitcast.1 = bf16[127,447]{0,1:T(8,128)(2,1)} bitcast(%bitcast_input.1)
+}
+
+%fused_computation (param_0: bf16[447,2], param_1: bf16[127,447]) -> f32[127,2] {
+  %param_0 = bf16[447,2]{0,1:T(2,128)(2,1)} parameter(0)
+  %fusion.1 = bf16[447,2]{0,1:T(2,128)(2,1)} fusion(%param_0), kind=kLoop, calls=%bitcast_fusion
+  %param_1 = bf16[127,447]{0,1:T(8,128)(2,1)S(1)} parameter(1)
+  %fusion.2 = bf16[127,447]{0,1:T(8,128)(2,1)} fusion(%param_1), kind=kLoop, calls=%bitcast_fusion.1
+  ROOT %convolution.2 = f32[127,2]{0,1:T(2,128)} convolution(%fusion.1, %fusion.2), dim_labels=fb_oi->fb, metadata={op_name="jit(dot)/jit(main)/dot_general" source_file="/tmp/v6-schedule-heldout.py" source_line=8}
+}
+
+ENTRY %main.4 (Arg_0.1: bf16[127,447], Arg_1.2: bf16[447,2]) -> f32[127,2] {
+  %Arg_0.1 = bf16[127,447]{0,1:T(8,128)(2,1)} parameter(0), metadata={op_name="a"}
+  %copy-start = (bf16[127,447]{0,1:T(8,128)(2,1)S(1)}, bf16[127,447]{0,1:T(8,128)(2,1)}, u32[]{:S(2)}) copy-start(%Arg_0.1), cross_program_prefetch_index=0
+  %Arg_1.2 = bf16[447,2]{0,1:T(2,128)(2,1)} parameter(1), metadata={op_name="b"}
+  %copy-done = bf16[127,447]{0,1:T(8,128)(2,1)S(1)} copy-done(%copy-start)
+  ROOT %fusion = f32[127,2]{0,1:T(2,128)} fusion(%Arg_1.2, %copy-done), kind=kOutput, calls=%fused_computation, metadata={op_name="jit(dot)/jit(main)/dot_general" source_file="/tmp/v6-schedule-heldout.py" source_line=8}, backend_config={"flag_configs":[],"window_config":{"kernel_window_bounds":["56","1"],"output_window_bounds":["1","1"],"input_window_bounds":["1","4"],"estimated_cycles":"4395","iteration_bounds":["1","1","1"]},"scoped_memory_configs":[],"used_scoped_memory_configs":[{"memory_space":"1","offset":"0","size":"3072"}],"retry_config":{"retry_count":"0"},"convolution_algorithm_config":{"emitter":"EmitAllBatchInSublanes"}}
+}
+

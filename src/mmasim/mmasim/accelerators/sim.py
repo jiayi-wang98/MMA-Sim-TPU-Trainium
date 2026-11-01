@@ -1,7 +1,8 @@
 """CPU reference adapter for measured TPU, Blackhole and Trainium3 paths.
 
 Input values must already be quantized to the selected operand format. No
-implicit casting, generic-K padding, fused-C assumption, or autograd is used.
+implicit casting, fused-C assumption, or autograd is used. The v6e backend
+models zero padding inside its captured K256 MXU scheduling blocks.
 All dot_bits inputs use FP32 encodings of those operand values.
 """
 from fractions import Fraction
@@ -64,7 +65,8 @@ class Matmul:
     low-format path. FP4 JAX and Pallas have different arithmetic.
     """
     def __init__(self, arch, fmt='bf16', *, mode='ordinary', chunk=128,
-                 mapping='half', parts=128, c_mode='zero', backend=None):
+                 mapping='half', parts=128, c_mode='zero', backend=None,
+                 compiled_hlo=None):
         if arch not in ('TPU-v5e', 'TPU-v6e', 'TPU-v7', 'Blackhole', 'Trainium3'):
             raise ValueError('Unknown architecture')
         if fmt not in _FORMATS or c_mode not in ('zero', 'late_fp32'):
@@ -97,6 +99,17 @@ class Matmul:
         self.arch, self.fmt, self.mode = arch, fmt, mode
         self.chunk, self.mapping, self.parts, self.c_mode = chunk, mapping, parts, c_mode
         self.backend = backend
+        if compiled_hlo is not None and arch != 'TPU-v6e':
+            raise ValueError('compiled_hlo selects a TPU-v6e native MXU schedule only')
+        self._v6_profile = tpu_v6.parse_compiled_hlo(compiled_hlo) if compiled_hlo is not None else None
+
+    def _v6_mode(self, m, n, k):
+        if self._v6_profile is not None:
+            shape, mode = self._v6_profile
+            if shape != (m,k,n):
+                raise ValueError('Runtime M,K,N differ from compiled_hlo')
+            return mode
+        return tpu_v6.native_mode(m,k,n)
 
     def _shape(self, m, n, k):
         if min(m, n, k) <= 0:
@@ -104,8 +117,7 @@ class Matmul:
         if self.arch == 'TPU-v5e' and k not in (128, 256, 512, 1024, 2048):
             raise NotImplementedError('TPU v5e requires a validated K: 128/256/512/1024/2048')
         if self.arch == 'TPU-v6e':
-            if k not in (128, 256, 512, 1024, 2048) or (k > 128 and (n != 128 or m not in (64, 128, 256))):
-                raise NotImplementedError('TPU v6e requires M64/128/256 and N128 at K256/512/1024/2048; larger M and other N remain unresolved')
+            self._v6_mode(m,n,k)
         if self.arch == 'TPU-v7':
             valid_k = (128, 256, 512, 640, 768, 896, 1024, 1152, 1536, 2048) if self.fmt == 'bf16' else (128, 256, 512)
             if n != 128 or k not in valid_k:
@@ -138,7 +150,8 @@ class Matmul:
         if self.arch == 'TPU-v5e':
             result = tpu_pe.gemm_dot([x >> 16 for x in a], [x >> 16 for x in b])
         elif self.arch == 'TPU-v6e':
-            result = tpu_v6.dot_bf16([x >> 16 for x in a], [x >> 16 for x in b], n=n)
+            result = tpu_v6.dot_bf16([x >> 16 for x in a], [x >> 16 for x in b],
+                                    m=m,n=n,profile_mode=self._v6_mode(m,n,len(a)))
         elif self.arch == 'TPU-v7':
             aa, bb = [x >> 16 for x in a], [x >> 16 for x in b]
             if self.fmt == 'bf16':

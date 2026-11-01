@@ -7,13 +7,9 @@ ROOT=args.data_root;model=Matmul('TPU-v6e');counts={'supported_cases':0,'unsuppo
 for p in sorted((ROOT/'artifacts/v6-shape-20261031').glob('k*/observations.jsonl')):
  cfg=json.loads(p.with_name('arguments.json').read_text())
  for r in map(json.loads,p.open()):
-  if cfg['k']>128 and cfg['n']!=128:
-   try:model.dot_bits(r['a_fp32_bits'],r['b_fp32_bits'],m=cfg['m'],n=cfg['n'])
-   except NotImplementedError:counts['unsupported_cases']+=1;continue
-   raise AssertionError('Unresolved native profile accepted')
   y=model.dot_bits(r['a_fp32_bits'],r['b_fp32_bits'],m=cfg['m'],n=cfg['n']);counts['supported_cases']+=1
   counts['mismatches']+=any(set(h)!={f'{y:08x}'} for h in r['observed'])
-assert counts=={'supported_cases':1936,'unsupported_cases':2240,'mismatches':0},counts
+assert counts=={'supported_cases':4176,'unsupported_cases':0,'mismatches':0},counts
 controls={}
 for p in sorted((ROOT/'artifacts/v6-shape-controls-20261031').glob('*/observations.jsonl')):
  n=bad=0

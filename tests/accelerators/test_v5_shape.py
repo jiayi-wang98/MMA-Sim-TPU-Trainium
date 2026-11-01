@@ -7,5 +7,4 @@ class V5ShapeTests(unittest.TestCase):
         cases=json.loads(Path(__file__).with_name('v5-shape-measured.json').read_text())
         for r in cases:
             self.assertEqual(Matmul('TPU-v5e').dot_bits(r['a'],r['b'],m=64,n=64),int(r['expected'],16))
-            with self.assertRaises(NotImplementedError):
-                Matmul('TPU-v6e').dot_bits(r['a'],r['b'],m=64,n=64)
+            self.assertEqual(Matmul('TPU-v6e').dot_bits(r['a'],r['b'],m=64,n=64),int(r['v6_expected'],16))

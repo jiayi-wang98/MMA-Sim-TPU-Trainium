@@ -1,0 +1,80 @@
+HloModule jit_loop, is_scheduled=true, entry_computation_layout={(bf16[4096,256]{1,0:T(8,128)(2,1)}, bf16[8,256,128]{2,1,0:T(8,128)(2,1)}, f32[4096,128]{1,0:T(8,128)})->f32[4096,128]{1,0:T(8,128)}}, allow_spmd_sharding_propagation_to_parameters={false,false,false}, allow_spmd_sharding_propagation_to_output={true}
+
+%fused_computation.2.clone.clone (param_0.10: bf16[8,256,128], param_1.11: s32[]) -> bf16[256,128] {
+  %param_0.10 = bf16[8,256,128]{2,1,0:T(8,128)(2,1)} parameter(0)
+  %param_1.11 = s32[]{:T(128)S(6)} parameter(1)
+  %constant.4..sunk.12 = s32[]{:T(128)} constant(0)
+  %dynamic-slice.13 = bf16[1,256,128]{2,1,0:T(8,128)(2,1)} dynamic-slice(%param_0.10, %param_1.11, %constant.4..sunk.12, %constant.4..sunk.12), dynamic_slice_sizes={1,256,128}, metadata={op_name="jit(loop)/jit(main)/while/body/dynamic_slice" source_file="/tmp/v6-timing-scan.py" source_line=29}, backend_config={"flag_configs":[],"scoped_memory_configs":[],"indices_config":{"index_known_bits":[{"zeroes":"0","ones":"0","bitwidth":"32"},{"zeroes":"4294967295","ones":"0","bitwidth":"32"},{"zeroes":"4294967295","ones":"0","bitwidth":"32"}],"is_index_aligned":[true,true,true]},"used_scoped_memory_configs":[]}
+  ROOT %bitcast.12 = bf16[256,128]{1,0:T(8,128)(2,1)} bitcast(%dynamic-slice.13), metadata={op_name="jit(loop)/jit(main)/while/body/squeeze" source_file="/tmp/v6-timing-scan.py" source_line=29}
+}
+
+%bitcast_fusion.clone.clone (bitcast_input.2: bf16[4096,256]) -> bf16[4096,256] {
+  %bitcast_input.2 = bf16[4096,256]{1,0:T(8,128)(2,1)S(1)} parameter(0)
+  ROOT %bitcast.11 = bf16[4096,256]{1,0:T(8,128)(2,1)} bitcast(%bitcast_input.2)
+}
+
+%fused_computation.1.clone.clone (param_0.11: f32[4096,128], param_1.12: bf16[4096,256], param_2.7: bf16[8,256,128], param_3.2: s32[]) -> f32[4096,128] {
+  %param_0.11 = f32[4096,128]{0,1:T(8,128)S(1)} parameter(0)
+  %param_2.7 = bf16[8,256,128]{2,1,0:T(8,128)(2,1)} parameter(2)
+  %param_3.2 = s32[]{:T(128)S(6)} parameter(3)
+  %fusion.8 = bf16[256,128]{1,0:T(8,128)(2,1)} fusion(%param_2.7, %param_3.2), kind=kLoop, calls=%fused_computation.2.clone.clone, metadata={op_name="jit(loop)/jit(main)/while/body/squeeze" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %param_1.12 = bf16[4096,256]{1,0:T(8,128)(2,1)S(1)} parameter(1)
+  %fusion.9 = bf16[4096,256]{1,0:T(8,128)(2,1)} fusion(%param_1.12), kind=kLoop, calls=%bitcast_fusion.clone.clone
+  %convolution.5 = f32[128,4096]{1,0:T(8,128)} convolution(%fusion.8, %fusion.9), dim_labels=fb_oi->bf, metadata={op_name="jit(loop)/jit(main)/while/body/dot_general" source_file="/tmp/v6-timing-scan.py" source_line=25}
+  %bitcast.13 = f32[4096,128]{0,1:T(8,128)} bitcast(%convolution.5), metadata={op_name="jit(loop)/jit(main)/while/body/dot_general" source_file="/tmp/v6-timing-scan.py" source_line=25}
+  ROOT %add.51 = f32[4096,128]{0,1:T(8,128)S(1)} add(%param_0.11, %bitcast.13), metadata={op_name="jit(loop)/jit(main)/while/body/add" source_file="/tmp/v6-timing-scan.py" source_line=30}
+}
+
+%wide.wide.region_0.55.clone.clone.sunk.clone.sunk.clone.sunk (wide.wide.arg_tuple.0: (s32[], f32[4096,128], bf16[8,256,128], bf16[4096,256], s32[], /*index=5*/s32[], s32[], s32[])) -> (s32[], f32[4096,128], bf16[8,256,128], bf16[4096,256], s32[], /*index=5*/s32[], s32[], s32[]) {
+  %constant.57..sunk = s32[]{:T(128)} constant(7), metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/rem" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %constant.56..sunk = s32[]{:T(128)} constant(1)
+  %constant.58..sunk = s32[]{:T(128)} constant(8)
+  %constant.4..sunk.13 = s32[]{:T(128)} constant(0)
+  %wide.wide.arg_tuple.0 = (s32[]{:T(128)}, f32[4096,128]{0,1:T(8,128)S(1)}, bf16[8,256,128]{2,1,0:T(8,128)(2,1)}, bf16[4096,256]{1,0:T(8,128)(2,1)S(1)}, s32[]{:T(128)}, /*index=5*/s32[]{:T(128)}, s32[]{:T(128)}, s32[]{:T(128)}) parameter(0)
+  %get-tuple-element.147 = s32[]{:T(128)} get-tuple-element(%wide.wide.arg_tuple.0), index=0
+  %and.12 = s32[]{:T(128)S(6)} and(%get-tuple-element.147, %constant.57..sunk), metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/rem" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %add.52 = s32[]{:T(128)} add(%get-tuple-element.147, %constant.56..sunk), metadata={op_name="jit(loop)/jit(main)/while/body/add" source_file="/tmp/v6-timing-scan.py" source_line=31}
+  %add.54 = s32[]{:T(128)S(6)} add(%and.12, %constant.58..sunk), metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/add" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %compare.58 = pred[]{:T(512)S(6)} compare(%and.12, %constant.4..sunk.13), direction=NE, metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/ne" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %compare.57 = pred[]{:T(512)S(6)} compare(%and.12, %constant.4..sunk.13), direction=LT, metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/lt" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %and.13 = pred[]{:T(512)S(6)} and(%compare.57, %compare.58), metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/and" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %select.31 = s32[]{:T(128)S(6)} select(%and.13, %add.54, %and.12), metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/select_n" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %add.55 = s32[]{:T(128)S(6)} add(%select.31, %constant.58..sunk), metadata={op_name="jit(loop)/jit(main)/while/body/add" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %compare.59 = pred[]{:T(512)S(6)} compare(%select.31, %constant.4..sunk.13), direction=LT, metadata={op_name="jit(loop)/jit(main)/while/body/lt" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %select.32 = s32[]{:T(128)S(6)} select(%compare.59, %add.55, %select.31), metadata={op_name="jit(loop)/jit(main)/while/body/select_n" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %get-tuple-element.159 = s32[]{:T(128)} get-tuple-element(%wide.wide.arg_tuple.0), index=4
+  %get-tuple-element.160 = s32[]{:T(128)} get-tuple-element(%wide.wide.arg_tuple.0), index=5, metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/rem" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %get-tuple-element.161 = s32[]{:T(128)} get-tuple-element(%wide.wide.arg_tuple.0), index=6
+  %get-tuple-element.162 = s32[]{:T(128)} get-tuple-element(%wide.wide.arg_tuple.0), index=7
+  %get-tuple-element.157 = bf16[8,256,128]{2,1,0:T(8,128)(2,1)} get-tuple-element(%wide.wide.arg_tuple.0), index=2
+  %get-tuple-element.158 = bf16[4096,256]{1,0:T(8,128)(2,1)S(1)} get-tuple-element(%wide.wide.arg_tuple.0), index=3
+  %get-tuple-element.148 = f32[4096,128]{0,1:T(8,128)S(1)} get-tuple-element(%wide.wide.arg_tuple.0), index=1
+  %fusion.10 = f32[4096,128]{0,1:T(8,128)S(1)} fusion(%get-tuple-element.148, %get-tuple-element.158, %get-tuple-element.157, %select.32), kind=kOutput, calls=%fused_computation.1.clone.clone, metadata={op_name="jit(loop)/jit(main)/while/body/dot_general" source_file="/tmp/v6-timing-scan.py" source_line=25}, backend_config={"flag_configs":[],"window_config":{"kernel_window_bounds":["512","2"],"output_window_bounds":["16","32"],"input_window_bounds":["32","1"],"estimated_cycles":"2806","iteration_bounds":["1","1","1"]},"scoped_memory_configs":[],"used_scoped_memory_configs":[{"memory_space":"1","offset":"0","size":"2068480"}],"retry_config":{"retry_count":"0"},"convolution_algorithm_config":{"emitter":"EmitOutputBatchInSublanes"}}
+  ROOT %tuple.30 = (s32[]{:T(128)}, f32[4096,128]{0,1:T(8,128)S(1)}, bf16[8,256,128]{2,1,0:T(8,128)(2,1)}, bf16[4096,256]{1,0:T(8,128)(2,1)S(1)}, s32[]{:T(128)}, /*index=5*/s32[]{:T(128)}, s32[]{:T(128)}, s32[]{:T(128)}) tuple(%add.52, %fusion.10, %get-tuple-element.157, %get-tuple-element.158, %get-tuple-element.159, /*index=5*/%get-tuple-element.160, %get-tuple-element.161, %get-tuple-element.162)
+}
+
+%wide.wide.region_1.64.clone.clone.clone (wide.wide.arg_tuple.1: (s32[], f32[4096,128], bf16[8,256,128], bf16[4096,256], s32[], /*index=5*/s32[], s32[], s32[])) -> pred[] {
+  %constant.60 = s32[]{:T(128)} constant(256)
+  %wide.wide.arg_tuple.1 = (s32[]{:T(128)}, f32[4096,128]{0,1:T(8,128)S(1)}, bf16[8,256,128]{2,1,0:T(8,128)(2,1)}, bf16[4096,256]{1,0:T(8,128)(2,1)S(1)}, s32[]{:T(128)}, /*index=5*/s32[]{:T(128)}, s32[]{:T(128)}, s32[]{:T(128)}) parameter(0)
+  %get-tuple-element.118 = s32[]{:T(128)} get-tuple-element(%wide.wide.arg_tuple.1), index=0
+  ROOT %compare.53 = pred[]{:T(512)} compare(%get-tuple-element.118, %constant.60), direction=LT, metadata={op_name="jit(loop)/jit(main)/while/cond/lt" source_file="/tmp/v6-timing-scan.py" source_line=31}
+}
+
+ENTRY %main.70 (Arg_0.1: bf16[4096,256], Arg_1.2: bf16[8,256,128], Arg_2.3: f32[4096,128]) -> f32[4096,128] {
+  %constant.4 = s32[]{:T(128)} constant(0)
+  %constant.58 = s32[]{:T(128)} constant(8)
+  %constant.57 = s32[]{:T(128)} constant(7), metadata={op_name="jit(loop)/jit(main)/while/body/jit(remainder)/rem" source_file="/tmp/v6-timing-scan.py" source_line=29}
+  %constant.56 = s32[]{:T(128)} constant(1)
+  %Arg_2.3 = f32[4096,128]{1,0:T(8,128)} parameter(2), sharding={replicated}, metadata={op_name="c"}
+  %Arg_1.2 = bf16[8,256,128]{2,1,0:T(8,128)(2,1)} parameter(1), sharding={replicated}, metadata={op_name="bank"}
+  %Arg_0.1 = bf16[4096,256]{1,0:T(8,128)(2,1)} parameter(0), sharding={replicated}, metadata={op_name="a"}
+  %copy.2 = s32[]{:T(128)} copy(%constant.4)
+  %copy-start = (bf16[4096,256]{1,0:T(8,128)(2,1)S(1)}, bf16[4096,256]{1,0:T(8,128)(2,1)}, u32[]{:S(2)}) copy-start(%Arg_0.1)
+  %copy = f32[4096,128]{0,1:T(8,128)S(1)} copy(%Arg_2.3), backend_config={"flag_configs":[],"window_config":{"kernel_window_bounds":[],"output_window_bounds":["16","16"],"input_window_bounds":["256","1"],"estimated_cycles":"6640","iteration_bounds":["1","2"]},"scoped_memory_configs":[],"used_scoped_memory_configs":[{"memory_space":"1","offset":"0","size":"4194304"}],"retry_config":{"retry_count":"0"}}
+  %copy-done = bf16[4096,256]{1,0:T(8,128)(2,1)S(1)} copy-done(%copy-start)
+  %tuple.31 = (s32[]{:T(128)}, f32[4096,128]{0,1:T(8,128)S(1)}, bf16[8,256,128]{2,1,0:T(8,128)(2,1)}, bf16[4096,256]{1,0:T(8,128)(2,1)S(1)}, s32[]{:T(128)}, /*index=5*/s32[]{:T(128)}, s32[]{:T(128)}, s32[]{:T(128)}) tuple(%copy.2, %copy, %Arg_1.2, %copy-done, %constant.56, /*index=5*/%constant.57, %constant.4, %constant.58)
+  %while.4 = (s32[]{:T(128)}, f32[4096,128]{0,1:T(8,128)S(1)}, bf16[8,256,128]{2,1,0:T(8,128)(2,1)}, bf16[4096,256]{1,0:T(8,128)(2,1)S(1)}, s32[]{:T(128)}, /*index=5*/s32[]{:T(128)}, s32[]{:T(128)}, s32[]{:T(128)}) while(%tuple.31), condition=%wide.wide.region_1.64.clone.clone.clone, body=%wide.wide.region_0.55.clone.clone.sunk.clone.sunk.clone.sunk, metadata={op_name="jit(loop)/jit(main)/while" source_file="/tmp/v6-timing-scan.py" source_line=31}
+  %get-tuple-element.69 = f32[4096,128]{0,1:T(8,128)S(1)} get-tuple-element(%while.4), index=1, metadata={op_name="jit(loop)/jit(main)/while" source_file="/tmp/v6-timing-scan.py" source_line=31}
+  ROOT %copy.1 = f32[4096,128]{1,0:T(8,128)} copy(%get-tuple-element.69), metadata={op_name="jit(loop)/jit(main)/while" source_file="/tmp/v6-timing-scan.py" source_line=31}, backend_config={"flag_configs":[],"window_config":{"kernel_window_bounds":[],"output_window_bounds":["256","1"],"input_window_bounds":["16","16"],"estimated_cycles":"6640","iteration_bounds":["2","1"]},"scoped_memory_configs":[],"used_scoped_memory_configs":[{"memory_space":"1","offset":"0","size":"4194304"}],"retry_config":{"retry_count":"0"}}
+}
+

@@ -57,11 +57,11 @@ Available profiles
 * TPU-v5e: BF16, K128/256/512/1024/2048; DP4 partial-tail rule, DPA8 numerical
   updates and sequential tile composition. A follow-up sweep matches 4,176
   recorded cases across eight output shapes, without shape-dependent changes.
-* TPU-v6e: BF16, K128 for the tested shapes; K256/512/1024/2048 at
-  M64/128/256 and N128. M4096,K256,N128 has 21/32 dense mismatches and is
-  rejected; an explicit split into two K128 calls matches all 32 cases.
-  The same local rules feed a paired-then-sequential tile reduction. Native
-  N!=128 at K>=256 has measured discrepancies and raises NotImplementedError.
+* TPU-v6e: BF16 DEFAULT MXU paths, including irregular K tails. Two K256
+  schedules share the frozen DP4 arithmetic: independent K128 halves, or
+  cross-half DP4 pairing at every update. Compiler windows select the path;
+  complete K256 results accumulate sequentially. The revised model matches
+  61,011 recorded dot comparisons. VPU reductions are outside this model.
 * TPU-v7: BF16 native N128 profile, measured K values from 128 through 2048;
   E-27 DP4 alignment, paired tile sums followed by sequential accumulation.
   N other than 128 raises NotImplementedError.
@@ -185,17 +185,39 @@ selected reduction schedule, then pass the same recorded-output regressions.
 A training wrapper would additionally need an explicitly defined backward
 arithmetic policy; this extension deliberately raises on requires_grad inputs.
 
-V6e shape follow-up
--------------------
+V6e native MXU scheduling
+-------------------------
 
-A 40-configuration native sweep with the same inputs and library versions as
-v5e yields 1,936 comparisons matching the newly scoped candidate. The remaining
-2,240 recorded cases belong to unresolved N!=128,K>=256 profiles and are
-rejected; 475 of those cases actually disagree with the paired-tile candidate.
-All shapes match at K128. At K256, the 64x64 native shape has 21/32 dense
-mismatches, while explicitly splitting into two K128 calls matches 76/76
-cases. An explicit sequential K1024 control at N128 matches 124/124 cases.
+The v6e backend now matches all 4,176 cases from the original shape sweep,
+including the previously unresolved large-M and N!=128 paths. New shape,
+position, spatial, K-tail, and full-random captures bring the total to 61,011
+recorded dot comparisons, with no mismatches. This count includes shared
+operands replayed across shapes. The fully random matrix holdout contributes
+3,807 checked outputs across 64 configurations. Another 4,224 repeated
+executions, including queued and interleaved calls, recompilation, and a fresh
+Python process, produce no observed bit changes.
 
-The v6e backend therefore differs from the v5e backend at long K and enforces
-a shape guard. tests/accelerators/v6-shape-validation.json records the scope,
-and v6-shape-measured.json bundles native N128 regression outputs.
+Compiler lowering is part of the arithmetic profile. The adapter includes
+686 captured (M,K,N) profiles for JAX/jaxlib 0.6.2 and libtpu 0.0.17. For a new
+shape, supply the native compiled HLO, which encodes the selected matrix
+orientation and window bounds::
+
+  from pathlib import Path
+  sim = Matmul("TPU-v6e", "bf16",
+               compiled_hlo=Path("native-dot.hlo").read_text())
+  D = sim(A, B)
+
+Capture this text from the original DEFAULT BF16->FP32 dot with
+``jax.jit(dot).lower(A, B).compile().as_text()`` on the target stack.
+The HLO must describe one native dot, with M/K/N matching the operands.
+Device loops, explicit split-dot programs, and VPU-only reductions are
+rejected. Without HLO, uncaptured K>128 profiles are rejected rather than
+guessing compiler orientation. K<=128 MXU arithmetic is the same in both
+schedules. Nonfinite operands remain outside the public finite-input API.
+
+The dispatcher reads the existing compiler windows; it does not emulate
+XLA's shape-dependent cost model. The rules generalize the captured arithmetic
+over K256 blocks and zero-padded tails, with measurements through K4097.
+``tests/accelerators/v6-scheduling-validation.json`` records the evidence.
+Earlier v6-shape-validation.json and v6-large-m-validation.json describe the
+superseded single-path model and are retained as historical snapshots.
