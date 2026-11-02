@@ -95,9 +95,11 @@ A blocks. Of 66 result pops, 33 are stored and 33 are discarded; there are
 no vector additions. This is consistent with the 256-column mode padded
 with 128 zero columns and retaining only the useful 128 output columns.
 MXU0 stores rows 0:144; MXU1 stores rows 144:264 (the final tile is padded).
-There is also a tail ``vmatmul.mubr.f32`` after BF16 unpacking. The current
-shape conclusion concerns the ordinary BF16 groups; the tail's detailed
-lane mapping remains open.
+The tail ``vmatmul.mubr.f32`` reads the final BF16 row after a VMEM spill
+and ``vunpack.c.l.bf16``. The logical interpreter now supports this one-row
+case: it emits two 8x128 result pops and only the first live row reaches
+the final tensor. The saved last-row outputs match the BF16 arithmetic model.
+General FP32 operands are outside this binding.
 
 Reproduction and checks
 -----------------------

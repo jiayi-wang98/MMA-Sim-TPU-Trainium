@@ -49,8 +49,8 @@ to MXUs, and outer K-tile addition are caller/scheduler operations.
 
 Neither instruction mode queries the HLO dispatcher or shape-profile registry.
 For full compiler-selected GEMMs, the existing ``mmasim.accelerators.Matmul``
-interface remains available. Automatic interpretation of arbitrary LLO programs
-is a separate task; these APIs do not yet implement it.
+interface remains available. For the captured straight-line LLO subset, ``LLOProgram`` now reconstructs
+and executes this scheduling directly from the final bundles (see below).
 
 Numerical details
 -----------------
@@ -100,3 +100,68 @@ Run from the repository root::
 This instruction binding currently covers v6e BF16. The existing v5e/v7 and
 other accelerator arithmetic backends are available through their original API;
 they are not assigned unmeasured v6e instruction semantics.
+
+
+Executing captured LLO programs
+------------------------------
+
+::
+
+  from pathlib import Path
+  from mmasim.tpu import LLOProgram
+
+  program = LLOProgram("TPU-v6e", Path("final_bundles.txt").read_text())
+  D = program(A, B)
+  bits = program.sample_bits(A, B, [(0, 0), (15, 127)])
+  print(program.last_execution)
+
+The constructor reads input/output shapes and scalar allocation aliases from
+LLO. Execution follows BF16 VMEM tile loads, packing, spill stores/reloads,
+SUBR/MUBR preparation, weight pushes, per-MXU result FIFOs, explicit FP32 vector
+adds, output stores, and the final DMA. It does not query shape profiles or HLO.
+The two independent push3 results are popped in multiply/preparation order,
+interleaved by eight-row blocks. Wide results are popped by eight-row block,
+then by 128-column half. Eight reversed 16-row pushes reconstruct a weight bank.
+
+``sample_bits`` follows the same dataflow and checks all output stores while
+lazily evaluating only the requested dots. It returns unsigned FP32 encodings,
+preserves request order and duplicates, and rejects out-of-range coordinates.
+This is useful for independent, non-repeating random input matrices without
+paying the cost of a full bit-level matrix simulation.
+
+The captured M257 tail loads the final BF16 row through VMEM, unpacks its low
+BF16 halves, and uses a ``vmatmul.mubr.f32`` group. This narrow path is now
+modeled using the BF16 numerical core and checked against the saved last-row
+outputs. Undefined unpack lanes cannot be written to live output rows. General
+FP32 matrix arithmetic is not enabled by this tail support.
+
+Supported programs have rank-two BF16 inputs and FP32 outputs, whole-matrix
+DMA, constant tile addresses, and one weight-loading phase per MXU. Unknown
+opcodes, branches, weight reloads, partial transfers, unresolved memory loads,
+incomplete outputs, and undrained result FIFOs raise errors. Execution models
+logical arithmetic and dataflow, not cycle timing or raw machine-code encoding.
+
+``test_tpu_llo_program.py`` replays all 98,432 entries in four saved hardware
+matrices, including padding and the final M257 row. Their repeated-pattern
+encoding is lossless: ``build_v6_llo_fixture.py`` verifies every original matrix
+entry before writing the compact fixture. Tests also use independent integer
+inputs to exercise row/column ordering separately from rounding, and verify
+that sampled execution agrees with complete execution.
+
+To collect independent layout/rounding inputs on a v6e with JAX 0.6.2/libtpu,
+set the flags before Python starts (hardware provisioning is separate)::
+
+  XLA_FLAGS='--xla_dump_to=/tmp/tpu-llo/hlo --xla_dump_hlo_as_text' \
+  LIBTPU_INIT_ARGS='--xla_jf_dump_to=/tmp/tpu-llo/llo --xla_jf_dump_llo_text --xla_jf_dump_llo_pass_label_regex=final_bundles' \
+    python tests/accelerators/collect_tpu_llo.py --out /tmp/tpu-llo/results
+
+Archive and retrieve the whole ``/tmp/tpu-llo`` directory. Replay locally::
+
+  python tests/accelerators/replay_tpu_llo.py /path/to/tpu-llo \
+    --output /tmp/tpu-llo-validation.json
+
+This replay uses each job's own LLO. It checks all spatial outputs with bounded
+integer controls (an exact integer arithmetic kernel isolates data routing),
+and separately checks selected independent BF16 rounding inputs with the
+bit-level instruction model. These are distinct validation steps; integer
+layout controls alone do not validate truncation or rounding behavior.
